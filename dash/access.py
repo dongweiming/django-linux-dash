@@ -12,6 +12,7 @@ try:
 except ImportError:
     lsb_release = None
 from datetime import datetime
+from collections import defaultdict
 import psutil
 from psutil._error import NoSuchProcess, AccessDenied
 
@@ -148,6 +149,8 @@ def users():
 
 def whereis():
     ret = []
+    # When soft install more then one
+    d = defaultdict(list)
     all_available_cmd = {}
     has_installed = []
     all_path = os.environ['PATH'].split(':')
@@ -161,7 +164,12 @@ def whereis():
         for cmd in cmd_list:
             if cmd in check_list:
                 has_installed.append(cmd)
-                ret.append([cmd, os.path.join(path, cmd)])
+                d[cmd].append(os.path.join(path, cmd))
+    for i in d.items():
+        ret.append(list(i))
+    not_installed = list(set(check_list).difference(set(has_installed)))
+    for n in not_installed:
+        ret.append([n, 'Not Installed'])
     return ret
 
 
@@ -169,3 +177,9 @@ def boot():
     has_boot = time.time() - psutil.get_boot_time()
     hour = int(has_boot/3600)
     return str(hour) + ':' + str(int((has_boot - hour* 3600)/60))
+
+
+def loadavg():
+    load = os.getloadavg()
+    cores = psutil.NUM_CPUS
+    return map(lambda x: ['%.2f' % x, '%.2f' % (x*100/cores)], load)

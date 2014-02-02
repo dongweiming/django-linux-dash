@@ -28,7 +28,6 @@
 
         <a class="brand" href="index.html">Linux Bootstrap Dashboard </a>
       <div class="nav-collapse">
-
       </div>
       <!--/.nav-collapse -->
     </div>
@@ -58,20 +57,23 @@
   <div class="main-inner">
     <div class="container">
 
-        <div align="center" class="lead">
-
-            <div id="refresh-all" class="btn js-refresh-info">
-                <i class="icon-refresh"></i></div><br>
-            A simple web dashboard to monitor your server.
-        </div>
+		<div align="center" class="lead">
+		            <br>
+		            <div class="btn js-refresh-info" id="refresh-all">
+						<i class="icon-refresh pop" rel="popover"
+							data-content="Click here to refresh all widgets on the page"
+							data-original-title="Refresh All Widgets"></i>
+					</div>
+					<br>
+		            A simple web dashboard to monitor your server.
+		        </div>
 
      <div class="row">
 
-        <div class="span6">
+        <div class="span4">
          <div class="widget widget-table action-table">
             <div class="widget-header"> <i class="icon-info-sign"></i>
               <h3>General Info</h3>
-
               <div id="refresh-os" class="btn btn-mini js-refresh-info">
                 <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
 
@@ -93,7 +95,54 @@
           <!-- /widget -->
         </div>
 
-        <div class="span6">
+		<div class="span4">
+		         <div class="widget">
+		            <div class="widget-header"> <i class="icon-laptop"></i>
+		              <h3>Load average</h3>
+
+		              <div id="refresh-cpu" class="btn btn-mini js-refresh-info">
+		                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+
+		              </div>
+
+		            </div>
+		            <!-- /widget-header -->
+		            <div class="widget-content">
+		               <div class="widget-content">
+		               <div style="text-align:center;">
+		                  <b>Number of cores:</b> <span class="lead" id="core-number">0</span>
+		                </div>
+		                <div id="big_stats" class="cf">
+
+		                  <div class="stat">
+		                      <i class="icon-#">1 min</i>
+		                      <span class="value odometer" id="cpu-1min-per"></span> %<br/>
+		                      <span class="value" id="cpu-1min"></span>
+		                  </div>
+		                  <!-- .stat -->
+
+		                  <div class="stat">
+		                      <i class="icon-#">5 min</i>
+		                      <span class="value odometer" id="cpu-5min-per"></span> %<br/>
+		                      <span class="value" id="cpu-5min"></span>
+		                  </div>
+		                  <!-- .stat -->
+
+		                  <div class="stat">
+		                      <i class="icon-#">15 min</i>
+		                      <span class="value odometer" id="cpu-15min-per"></span> %<br/>
+		                      <span class="value" id="cpu-15min"></span>
+		                  </div>
+		                  <!-- .stat -->
+		                </div>
+		              </div>
+		            </div>
+		            <!-- /widget-content -->
+		          </div>
+		          <!-- /widget -->
+		        </div>
+
+        <div class="span4">
          <div class="widget widget-nopad">
             <div class="widget-header">
                 <i class="icon-list-alt"></i>

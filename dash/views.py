@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, View
 
 from access import (df, hostname, ip, issue, mem, numberofcores, w, ps,
-                    whereis, users, boot)
+                    whereis, users, boot, loadavg)
 from utils import json_response
 
 class IndexView(TemplateView):
@@ -26,3 +26,4 @@ PsView = base('PsView', ps)
 WhereisView = base('WhereisView', whereis)
 UsersView = base('UsersView', users)
 BootView = base('BootView', boot)
+LoadavgView = base('LoadavgView', loadavg)

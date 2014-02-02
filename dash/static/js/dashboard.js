@@ -220,7 +220,9 @@ dashboard.getIp = function() {
                 { sTitle: "Interface" },
                 { sTitle: "IP" }
             ],
-            bPaginate: false,
+            iDisplayLength: 5,
+            bPaginate: true,
+            sPaginationType: "two_button",
             bFilter: false,
             bAutoWidth: true,
             bInfo: false
@@ -231,16 +233,38 @@ dashboard.getIp = function() {
 dashboard.getIspeed = function() {
     var rate = $("#ispeed-rate");
 
-    // 0 = MB
-    // 1 = KB
-    var AS = 1;
+    // 0 = KB
+    // 1 = MB
+    var AS = 0;
+    var power = AS+1;
+    var result = 0;
 
-    $.get("sh/speed.php?as=" + AS, function(data) {
-        rate.text(data);
+    $.get("sh/speed", function(data) {
+        // round the speed (float to int);
+        // dependent on value of AS, calculate speed in MB or KB ps
+        result = Math.floor((data/(Math.pow(1024,power))));
+        // update rate of speed on widget
+        rate.text(result);
+
     });
 
     var lead = rate.next(".lead");
-    lead.text(AS ? "KB/s" : "MB/s");
+    lead.text(AS ? "MB/s" : "KB/s");
+}
+
+dashboard.getLoadAverage = function() {
+    $.get("sh/loadavg", function(data) {
+        $("#cpu-1min").text(data[0][0]);
+        $("#cpu-5min").text(data[1][0]);
+        $("#cpu-15min").text(data[2][0]);
+        $("#cpu-1min-per").text(data[0][1]);
+        $("#cpu-5min-per").text(data[1][1]);
+        $("#cpu-15min-per").text(data[2][1]);
+    }, "json");
+}
+
+dashboard.getNumberOfCores = function() {
+    generate_os_data("sh/numberofcores", "#core-number");
 }
 
 // Function that calls all the other functions which refresh
@@ -255,6 +279,8 @@ dashboard.getAll = function() {
     dashboard.getWhereIs();
     dashboard.getIp();
     dashboard.getIspeed();
+    dashboard.getLoadAverage();
+    dashboard.getNumberOfCores();
 }
 
 dashboard.fnMap = {
@@ -268,4 +294,5 @@ dashboard.fnMap = {
     whereis: dashboard.getWhereIs,
     ip: dashboard.getIp,
     ispeed: dashboard.getIspeed,
+    cpu: dashboard.getLoadAverage,
 };
