@@ -25,6 +25,7 @@ if sys.platform == 'darwin':
 check_list = ['php', 'node', 'mysql', 'vim', 'python', 'ruby', 'java',
               'apache2', 'nginx', 'openssl', 'vsftpd', 'make']
 
+
 def df():
     '''disk_usage'''
     df = []
@@ -37,6 +38,7 @@ def df():
         df.append(disk)
     return df
 
+
 def hostname():
     return socket.gethostname()
 
@@ -47,7 +49,8 @@ def get_ip_address(ifname):
         s.fileno(),
         0x8915,
         struct.pack('256s', ifname[:15])
-       )[20:24])
+    )[20:24])
+
 
 def ip():
     url = 'http://ipecho.net/plain'
@@ -63,6 +66,7 @@ def ip():
         else:
             ret.append([network, get_ip_address(network)])
     return ret
+
 
 def issue():
     uname = platform.uname()[2]
@@ -113,24 +117,24 @@ def ps():
             else:
                 terminal = '??'
             # user + system (alias cputime)
-            cpu_time = (p_info.get_cpu_times().user + \
+            cpu_time = (p_info.get_cpu_times().user +
                         p_info.get_cpu_times().system)
-            minute = int(cpu_time/60)
+            minute = int(cpu_time / 60)
             cpu_time = str(minute) + ':' + '%.2f' % (cpu_time - minute * 60)
 
             ret.append([p_info.username,
                         p,
                         p_info.get_cpu_percent(),
                         '%.1f' % p_info.get_memory_percent(),
-                        p_info.get_memory_info().vms/1024, #vsz
-                        p_info.get_memory_info().rss/1024, #rss
+                        p_info.get_memory_info().vms / 1024,  # vsz
+                        p_info.get_memory_info().rss / 1024,  # rss
                         terminal,
-                        str(p_info.status), #STAT
+                        str(p_info.status),  # STAT
                         datetime.fromtimestamp(
                             p_info.create_time).strftime("%I:%M%p"),
                         cpu_time,
                         ' '.join(p_info.cmdline)
-                    ])
+                        ])
         except (NoSuchProcess, AccessDenied):
             continue
     return ret
@@ -139,11 +143,11 @@ def ps():
 def users():
     ret = []
     for u in pwd.getpwall():
-        if u.pw_uid <=499:
+        if u.pw_uid <= 499:
             type = 'system'
         else:
             type = 'user'
-        ret.append([type, u.pw_name, u.pw_shell])
+        ret.append([type, u.pw_name, u.pw_dir])
     return ret
 
 
@@ -158,7 +162,7 @@ def whereis():
         try:
             _, _, files = os.walk(path).next()
             all_available_cmd[path] = files
-        except StopIteration: # Maybe this PATH has not exists
+        except StopIteration:  # Maybe this PATH has not exists
             continue
     for path, cmd_list in all_available_cmd.items():
         for cmd in cmd_list:
@@ -175,11 +179,11 @@ def whereis():
 
 def boot():
     has_boot = time.time() - psutil.get_boot_time()
-    hour = int(has_boot/3600)
-    return str(hour) + ':' + str(int((has_boot - hour* 3600)/60))
+    hour = int(has_boot / 3600)
+    return str(hour) + ':' + str(int((has_boot - hour * 3600) / 60))
 
 
 def loadavg():
     load = os.getloadavg()
     cores = psutil.NUM_CPUS
-    return map(lambda x: ['%.2f' % x, '%.2f' % (x*100/cores)], load)
+    return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)

@@ -1,6 +1,7 @@
 from django.utils import simplejson
 from django.http import HttpResponse
 
+
 def json_response(func):
     """
     A decorator thats takes a view response and turns it
