@@ -26,7 +26,7 @@
   <div class="navbar-inner">
     <div class="container">
 
-        <a class="brand" href="index.html">Linux Bootstrap Dashboard </a>
+        <a class="brand" href="/">Linux Bootstrap Dashboard </a>
       <div class="nav-collapse">
       </div>
       <!--/.nav-collapse -->
@@ -57,7 +57,7 @@
   <div class="main-inner">
     <div class="container">
 
-		<div align="center" class="lead">
+		<div class="lead" style="text-align: center;">
 		            <br>
 		            <div class="btn js-refresh-info" id="refresh-all">
 						<i class="icon-refresh pop" rel="popover"
@@ -70,7 +70,7 @@
 
      <div class="row">
 
-        <div class="span4">
+        <div class="span3">
          <div class="widget widget-table action-table">
             <div class="widget-header"> <i class="icon-info-sign"></i>
               <h3>General Info</h3>
@@ -85,7 +85,7 @@
                 <br>
               <div style="text-align:center;">
               <b>OS:</b> <span class="" id="os-info"></span><br>
-              <b>Uptime:</b> <span class="odometer" id="os-uptime"></span> Hours<br>
+              <b>Uptime:</b> <span id="os-uptime"></span><br>
               <b>Hostname:</b> <span class="" id="os-hostname"></span><br>
               <br><br>
               </div>
@@ -95,7 +95,7 @@
           <!-- /widget -->
         </div>
 
-		<div class="span4">
+		<div class="span3">
 		         <div class="widget">
 		            <div class="widget-header"> <i class="icon-laptop"></i>
 		              <h3>Load average</h3>
@@ -108,7 +108,6 @@
 		            </div>
 		            <!-- /widget-header -->
 		            <div class="widget-content">
-		               <div class="widget-content">
 		               <div style="text-align:center;">
 		                  <b>Number of cores:</b> <span class="lead" id="core-number">0</span>
 		                </div>
@@ -135,14 +134,13 @@
 		                  </div>
 		                  <!-- .stat -->
 		                </div>
-		              </div>
 		            </div>
 		            <!-- /widget-content -->
 		          </div>
 		          <!-- /widget -->
 		        </div>
 
-        <div class="span4">
+        <div class="span6">
          <div class="widget widget-nopad">
             <div class="widget-header">
                 <i class="icon-list-alt"></i>
@@ -156,7 +154,7 @@
               <div class="widget big-stats-container">
                 <div class="widget-content">
 
-                  <div id="big_stats" class="cf">
+                 <div class="cf big_stats">
                     <div class="stat">
                         <i class="icon-#">Total</i>
                         <span class="value odometer" id="ram-total"></span> MB
@@ -192,7 +190,7 @@
 
     <div class="row">
          <div class="span6">
-           <div class="widget">
+           <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-list"></i>
               <h3>Disk Usage</h3>
               <div id="refresh-df" class="btn btn-mini js-refresh-info">
@@ -238,7 +236,7 @@
 
       <div class="row">
          <div class="span6">
-           <div class="widget">
+           <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-list"></i>
               <h3>Software</h3>
               <div id="refresh-whereis" class="btn btn-mini js-refresh-info">
@@ -257,7 +255,7 @@
          </div><!-- /span -->
 
          <div class="span3">
-           <div class="widget">
+           <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-monitor"></i>
               <h3>IP</h3>
               <div id="refresh-ip" class="btn btn-mini js-refresh-info">
@@ -275,7 +273,7 @@
          </div><!-- /span -->
 
          <div class="span3">
-           <div class="widget">
+           <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-monitor"></i>
               <h3>Internet Speed</h3>
               <div id="refresh-ispeed" class="btn btn-mini js-refresh-info">
@@ -321,7 +319,7 @@
 
       <div class="row">
         <div class="span12">
-          <div class="widget">
+         <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-dashboard"></i>
               <h3> Processes </h3>
               <div id="refresh-ps" class="btn btn-mini js-refresh-info">
