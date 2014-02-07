@@ -45,11 +45,14 @@ def hostname():
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+    try:
+        return socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,
+            struct.pack('256s', ifname[:15])
+        )[20:24])
+    except:
+        return 'Unable to get ip'
 
 
 def ip():
@@ -187,3 +190,10 @@ def loadavg():
     load = os.getloadavg()
     cores = psutil.NUM_CPUS
     return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)
+
+def speed():
+    download = 'http://www.inkjettips.com/chapter2.pdf'
+    t0=time.time()
+    size = len(urllib2.urlopen(download).read())
+    print t0,size,(time.time()-t0)
+    return int(size)/((time.time()-t0))
