@@ -191,9 +191,10 @@ def loadavg():
     cores = psutil.NUM_CPUS
     return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)
 
+
 def speed():
     download = 'http://www.inkjettips.com/chapter2.pdf'
-    t0=time.time()
+    t0 = time.time()
     size = len(urllib2.urlopen(download).read())
-    print t0,size,(time.time()-t0)
+    print t0, size, (time.time()-t0)
     return int(size)/((time.time()-t0))
