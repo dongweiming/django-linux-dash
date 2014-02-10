@@ -11,10 +11,6 @@ $(document).ready(function() {
             scrollTop: target.offset().top - 130
         }, 1000);
     });
-    // refresh all widgets
-    $('#refresh-all').on('click',function(){
-        dashboard.getAll();
-    });
     dashboard.getAll();
 }).on("click", ".js-refresh-info", function(event) {
     event.preventDefault();
@@ -62,3 +58,19 @@ function pulseElement(element, times, interval) {
         pulsing.timeoutIDs.push(setTimeout(f, times * interval));
     }
 }
+
+/**
+ * Adds jQuery UI sortable portlet functionality to widgets
+ *
+ *
+ */
+
+$( ".row" ).sortable({
+      connectWith: ".row",
+      handle: ".widget-header",
+      cancel: "",
+      cursor: "move",
+      opacity: 0.7,
+      scrollSensitivity:10,
+      tolerance: 'pointer'
+ });

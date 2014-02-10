@@ -58,14 +58,13 @@
     <div class="container">
 
 		<div class="lead" style="text-align: center;">
-		            <br>
-		            <div class="btn js-refresh-info" id="refresh-all">
-						<i class="icon-refresh pop" rel="popover"
-							data-content="Click here to refresh all widgets on the page"
-							data-original-title="Refresh All Widgets"></i>
-					</div>
-					<br>
-		            A simple web dashboard to monitor your server.
+			<div class="btn icon-refresh pop js-refresh-info" rel="popover"
+			               data-content="Click here to refresh all widgets on the page"
+			               data-original-title="Refresh All Widgets" id="refresh-all">
+			            </div>
+			            <div>
+			                A simple web dashboard to monitor your server.
+			            </div>
 		        </div>
 
      <div class="row">
@@ -74,9 +73,7 @@
          <div class="widget widget-table action-table">
             <div class="widget-header"> <i class="icon-info-sign"></i>
               <h3>General Info</h3>
-              <div id="refresh-os" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
-
+              <div id="refresh-os" class="btn icon-refresh js-refresh-info">
               </div>
 
             </div>
@@ -99,10 +96,7 @@
 		         <div class="widget">
 		            <div class="widget-header"> <i class="icon-laptop"></i>
 		              <h3>Load average</h3>
-
-		              <div id="refresh-cpu" class="btn btn-mini js-refresh-info">
-		                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
-
+					  <div id="refresh-cpu" class="btn icon-refresh js-refresh-info">
 		              </div>
 
 		            </div>
@@ -111,7 +105,7 @@
 		               <div style="text-align:center;">
 		                  <b>Number of cores:</b> <span class="lead" id="core-number">0</span>
 		                </div>
-		                <div id="big_stats" class="cf">
+		                <div class="cf big_stats">
 
 		                  <div class="stat">
 		                      <i class="icon-#">1 min</i>
@@ -145,8 +139,7 @@
             <div class="widget-header">
                 <i class="icon-list-alt"></i>
                 <h3>RAM</h3>
-                <div id="refresh-ram" class="btn btn-mini js-refresh-info">
-                     <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+                <div id="refresh-ram" class="btn icon-refresh js-refresh-info">
                 </div>
             </div>
             <!-- /widget-header -->
@@ -193,8 +186,7 @@
            <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-list"></i>
               <h3>Disk Usage</h3>
-              <div id="refresh-df" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-df" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -211,8 +203,7 @@
             <div class="widget widget-table action-table">
             <div class="widget-header"> <i class="icon-group"></i>
               <h3>Users</h3>
-              <div id="refresh-users" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-users" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -239,8 +230,7 @@
            <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-list"></i>
               <h3>Software</h3>
-              <div id="refresh-whereis" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-whereis" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -258,8 +248,7 @@
            <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-monitor"></i>
               <h3>IP</h3>
-              <div id="refresh-ip" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-ip" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -276,8 +265,7 @@
            <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-monitor"></i>
               <h3>Internet Speed</h3>
-              <div id="refresh-ispeed" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-ispeed" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -297,8 +285,7 @@
 			 <div class="widget widget-table action-table">
             <div class="widget-header"> <i class="icon-group"></i>
               <h3>Online</h3>
-              <div id="refresh-online" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-online" class="btn icon-refresh js-refresh-info">
               </div>
             </div>
             <!-- /widget-header -->
@@ -322,8 +309,7 @@
          <div class="widget widget-table">
             <div class="widget-header"> <i class="icon-dashboard"></i>
               <h3> Processes </h3>
-              <div id="refresh-ps" class="btn btn-mini js-refresh-info">
-                <i class="icon-refresh"></i> &nbsp;&nbsp;Refresh
+              <div id="refresh-ps" class="btn icon-refresh js-refresh-info">
               </div>
 			  <div class="pull-right">
                 <input type="text" id="filter-ps" class="widget-search" placeholder="search..." />
@@ -344,7 +330,21 @@
       </div>
       <!-- /row -->
 
-      </div>
+	  <div class="row">
+	         <div class="span12">
+	           <div class="widget widget-table">
+	             <div class="widget-header"> <i class="icon-dashboard"></i>
+	               <h3> Netstat </h3>
+	               <div id="refresh-netstat" class="btn btn-mini icon-refresh js-refresh-info">
+	             </div>
+	           </div>
+	           <div class="widget-content">
+	             <table id="netstat_dashboard" class="table table-hover table-condensed table-bordered" >
+	             </table>
+	           </div>
+	           </div>
+	         </div>
+	       </div>
 
     </div>
     <!-- /container -->
@@ -371,6 +371,7 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="{% static "js/jquery.js" %}"></script>
+<script src="{% static "js/jquery-ui.min.js" %}"></script>
 <script src="{% static "js/bootstrap.js" %}"></script>
 <script src="{% static "js/jquery.dataTables.min.js" %}"></script>
 <script src="{% static "js/odometer.js" %}"></script>

@@ -399,7 +399,9 @@ textarea {
 	color: #555;
 	vertical-align: middle;
 }
-
+.icon-refresh {
+        padding: 5px 10px;
+}
 .widget-content {
 	padding: 20px 15px 15px;
 	

@@ -143,8 +143,8 @@ dashboard.getOnline = function() {
 dashboard.getRam = function() {
     $.get("sh/mem", function(data) {
         var ram_total = data[1];
-        var ram_used = parseInt((data[2] / ram_total) * 100, 10);
-        var ram_free = parseInt((data[3] / ram_total) * 100, 10);
+        var ram_used = Math.round((data[2] / ram_total) * 100);
+        var ram_free = Math.round((data[3] / ram_total) * 100);
 
         $("#ram-total").text(ram_total);
         $("#ram-used").text(data[2]);
@@ -261,26 +261,45 @@ dashboard.getLoadAverage = function() {
         $("#cpu-5min-per").text(data[1][1]);
         $("#cpu-15min-per").text(data[2][1]);
     }, "json");
+	generate_os_data("sh/numberofcores", "#core-number");
 }
 
-dashboard.getNumberOfCores = function() {
-    generate_os_data("sh/numberofcores", "#core-number");
-}
-
-// Function that calls all the other functions which refresh
-// each individual widget.
+/**
+* Refreshes all widgets. Does not call itself recursively.
+*/
 dashboard.getAll = function() {
-    dashboard.getRam();
-    dashboard.getPs();
-    dashboard.getDf();
-    dashboard.getOs();
-    dashboard.getUsers();
-    dashboard.getOnline();
-    dashboard.getWhereIs();
-    dashboard.getIp();
-    dashboard.getIspeed();
-    dashboard.getLoadAverage();
-    dashboard.getNumberOfCores();
+    for (var item in dashboard.fnMap) {
+        if (dashboard.fnMap.hasOwnProperty(item) && item !== "all") {
+            dashboard.fnMap[item]();
+        }
+    }
+}
+
+
+dashboard.getNetStat = function() {
+    $.get("sh/netstat", function(data) {
+        destroy_dataTable("netstat_dashboard");
+        $("#filter-ps").val("").off("keyup");
+
+        var psTable = $("#netstat_dashboard").dataTable({
+            aaData: data,
+            aoColumns: [
+                { sTitle: "Protocol" },
+                { sTitle: "Recv-Q" },
+                { sTitle: "Send-Q" },
+                { sTitle: "local adress" },
+                { sTitle: "remote adress" },
+                { sTitle: "State" },
+                { sTitle: "PID" }
+            ],
+            bPaginate: true,
+            sPaginationType: "full_numbers",
+            bFilter: true,
+            sDom: "lrtip",
+            bAutoWidth: false,
+            bInfo: false
+        }).fadeIn();
+    }, "json");
 }
 
 dashboard.fnMap = {
@@ -295,4 +314,5 @@ dashboard.fnMap = {
     ip: dashboard.getIp,
     ispeed: dashboard.getIspeed,
     cpu: dashboard.getLoadAverage,
+    netstat: dashboard.getNetStat,
 };
