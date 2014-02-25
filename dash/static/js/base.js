@@ -1,17 +1,25 @@
 $(document).ready(function() {
+    // keep widgets ordered
+    keepWidgetOrdered();
+
+    // hide localstored hidden widgets
+    keepWidgetHidden();
+
     // enable popovers
     $(".pop").popover();
-    // Smooth scrolling for links.
-    $(".mainnav").on("click", ".js-smoothscroll", function(event) {
-        event.preventDefault();
-        var target = $(this.hash).parent();
-        pulseElement(target, 8, 400);
 
-        $("html").animate({
-            scrollTop: target.offset().top - 130
-        }, 1000);
-    });
+   // activate tooltips on hover
+   $("[data-toggle='tooltip']").tooltip({trigger: 'hover', placement:'right'});  
+
     dashboard.getAll();
+}).on("click", ".js-smoothscroll", function(event) {
+    event.preventDefault();
+    var target = $(this.hash).parent();
+    pulseElement(target, 8, 400);
+
+    $("html,body").animate({
+        scrollTop: target.offset().top - 130
+    }, 1000);
 }).on("click", ".js-refresh-info", function(event) {
     event.preventDefault();
     var item = event.target.id.split("-").splice(-1)[0];
@@ -65,12 +73,141 @@ function pulseElement(element, times, interval) {
  *
  */
 
-$( ".row" ).sortable({
-      connectWith: ".row",
+$( "#widgets" ).sortable({
       handle: ".widget-header",
-      cancel: "",
+      cancel: "#filter-ps",
       cursor: "move",
       opacity: 0.7,
       scrollSensitivity:10,
-      tolerance: 'pointer'
+      tolerance: 'pointer',
+      stop: function(event, ui) {
+            // save widget order in localstorage
+            var newOrder = new Array();
+            $('.widget').each(function() {
+                newOrder.push($(this).attr("id"));
+            });
+            localStorage.setItem('positions', JSON.stringify(newOrder));
+        }
  });
+
+/**
+ *
+ * Widget hide functionality
+ *
+**/
+// general cached DOM objects
+closedWidgetCount = $('#closed-widget-count'),
+closedWidgets = $('#closed-widget-list');
+allWidgets = $('.widget');
+
+// Close all widgets
+$('#close-all-widgets').click(function(){
+
+    allWidgets.each(function(index){
+	hideWidget($(this), 400);
+    });
+
+});
+
+// Open all widgets
+$('#open-all-widgets').click(function(){
+
+    allWidgets.each(function(index){
+	openWidget($(this), $(this).attr('id'), 500);
+    });
+});
+
+// attach a close button to all widget headers
+$('.widget-header').append('<div class="btn btn-icon-only icon-remove hide-widget"></div>');
+
+// hide / close widget function
+$('.hide-widget').live('click',function(){
+    var widget = $(this).parent().parent();
+    hideWidget(widget, 300);
+});
+
+// unhide closed widget
+$('.open-widget').live('click',function(){
+    // cache DOM objects/data used in this function
+    var widgetIdentifier = $(this).data('id');
+    var widget = $( "#" + widgetIdentifier );
+    var navItem = $(this).parent();
+
+    openWidget(widget,widgetIdentifier,500);
+
+    // remove item from closed-widget-list
+    navItem.remove();
+
+});
+
+function openWidget(widget, widgetIdentifier, speed){
+
+    // unhide widget
+    widget.show(500);
+
+    // decrement closed-widget-count 
+    closedWidgetCount.text( Number(closedWidgetCount.text()) - 1);
+
+     // remove widget from localstorage
+    var localData = JSON.parse(window.localStorage.getItem('hidden'));
+    for(var i = localData.length; i--;){
+        if (localData[i] == widgetIdentifier) {
+            localData.splice(i, 1);
+        }
+    }
+    localStorage.setItem('hidden', JSON.stringify(localData));
+}
+
+
+function hideWidget(widget, speed){
+    // cache DOM objects/data used in this function
+    var widgetName = widget.find('.widget-header h3').text();
+    var widgetIdentifier = widget.attr('id'); 
+
+    // update count
+    closedWidgetCount.text( Number(closedWidgetCount.text()) + 1);
+
+    // hide widget from DOM
+    widget.hide(speed);
+
+    // add to hidden list
+    closedWidgets.append('<li><a class="open-widget" data-id="'+widgetIdentifier+'"><i class="icon-plus-sign"></i>  '+widgetName+'</a></li>');
+
+    // add widget to localstorage (and create item if needed)
+    var localData = JSON.parse(window.localStorage.getItem('hidden'));
+    if(localData == null) {
+        hidden = new Array();
+        hidden.push(widgetIdentifier);
+        localStorage.setItem('hidden', JSON.stringify(hidden));
+    }
+    else{
+        if (!isInArray(localData, widgetIdentifier)) {
+            localData.push(widgetIdentifier);
+            localStorage.setItem('hidden', JSON.stringify(localData));
+        }
+    }
+}
+
+function keepWidgetHidden(){
+    var localData = JSON.parse(window.localStorage.getItem('hidden'));
+    if(localData!=null) {
+        $.each(localData, function(i,value){
+             hideWidget( $("#" + value), 0 );
+        });
+    }
+}
+
+function keepWidgetOrdered(){
+    var localData = JSON.parse(window.localStorage.getItem('positions'));
+    if(localData!=null) {
+        $.each(localData, function(i,value){
+            var widgetId ="#" + value;
+            $("#widgets").append($(widgetId).parent());
+        });
+    }
+}
+
+function isInArray(array, search)
+{
+    return (array.indexOf(search) >= 0) ? true : false; 
+}

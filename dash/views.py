@@ -1,7 +1,8 @@
 from django.views.generic import TemplateView, View
 
 from access import (df, hostname, ip, issue, mem, numberofcores, w, ps,
-                    whereis, users, boot, loadavg)
+                    whereis, users, boot, loadavg, bandwidth, dnsmasq_leases,
+                    ping, date)
 from utils import json_response
 
 
@@ -28,3 +29,7 @@ WhereisView = base('WhereisView', whereis)
 UsersView = base('UsersView', users)
 BootView = base('BootView', boot)
 LoadavgView = base('LoadavgView', loadavg)
+BandwidthView = base('BandwidthView', bandwidth)
+DnsmasqView = base('DnsmasqView', dnsmasq_leases)
+PingView = base('PingView', ping)
+TimeView = base('TimeView', date)

@@ -2,7 +2,8 @@ from django.conf.urls import patterns
 from views import (IndexView, DfView, HostnameView, ExternalipView,
                    IssueView, MemoryView, WhoView, NumcpuView,
                    PsView, UsersView, WhereisView, BootView,
-                   LoadavgView)
+                   LoadavgView, BandwidthView, DnsmasqView, PingView,
+                   TimeView)
 
 
 urlpatterns = patterns('',
@@ -19,4 +20,8 @@ urlpatterns = patterns('',
                        (r'^sh/users/$', UsersView.as_view()),
                        (r'^sh/whereis/$', WhereisView.as_view()),
                        (r'^sh/boot/$', BootView.as_view()),
+                       (r'^sh/bandwidth/$', BandwidthView.as_view()),
+                       (r'^sh/dnsmasq-leases/$', DnsmasqView.as_view()),
+                       (r'^sh/ping/$', PingView.as_view()),
+                       (r'^sh/time/$', TimeView.as_view()),
                        )

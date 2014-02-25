@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import pwd
 import time
@@ -7,6 +8,7 @@ import platform
 import struct
 import fcntl
 import urllib2
+import subprocess
 try:
     import lsb_release
 except ImportError:
@@ -17,6 +19,7 @@ import psutil
 from psutil._error import NoSuchProcess, AccessDenied
 
 from utils import bytes2human, to_meg
+from conf import dnsmasq_lease_file, ping_hosts
 
 is_mac = False
 if sys.platform == 'darwin':
@@ -187,3 +190,72 @@ def loadavg():
     load = os.getloadavg()
     cores = psutil.NUM_CPUS
     return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)
+
+
+def bandwidth():
+    def ret_netstat():
+        netstat = defaultdict(int)
+        get_net_io_counters = psutil.net_io_counters(pernic=True)
+        for net in get_net_io_counters:
+            netstat['tx'] += get_net_io_counters[net].bytes_sent
+            netstat['rx'] += get_net_io_counters[net].bytes_recv
+        return netstat
+    old = ret_netstat()
+    time.sleep(2)
+    new = ret_netstat()
+    return dict(tx=(new['tx'] - old['tx'])/2, rx=(new['rx'] - old['rx'])/2)
+
+
+def dnsmasq_leases():
+    if os.path.exists(dnsmasq_lease_file):
+        ret = []
+        with open(dnsmasq_lease_file) as f:
+            for line in f.readlines():
+                line = line.strip()
+                if line:
+                    l = line.split()
+                    t = datetime.fromtimestamp(
+                        l[0]).strftime('%m/%d/%Y %H:%M:%S')
+                    ret.append([t, l[1], l[2], l[3]])
+        return ret
+    else:
+        return []
+
+
+def ping():
+    #ICMP requiring root privileges. so I can not implementation written by
+    # python
+    avg_regex = re.compile(r'dev =.*?/(.*?)/.*?/.*ms')
+    p_cmd = None
+    for i in ['/bin/ping', '/sbin/ping']:
+        if os.path.exists(i):
+            p_cmd = i
+    if p_cmd is None:
+        return []
+
+    def ret_ping(host):
+        ping = subprocess.Popen("{} -qc 2 {}".format("/sbin/ping", host),
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                shell = True)
+        match = avg_regex.search(ping.stdout.read())
+        if match:
+            return match.group(1)
+        else:
+            return ''
+
+    ret = []
+    if os.path.exists(ping_hosts):
+        with open(ping_hosts) as f:
+            for host in f.readlines():
+                host = host.strip('\n\t#')
+                if host:
+                    ret.append([host, ret_ping(host)])
+    else:
+        for host in ['gnu.org', 'github.com', 'wikipedia.org']:
+            ret.append([host, ret_ping(host)])
+    return ret
+
+
+def date():
+    return time.strftime('%a %b %d %H:%M:%S %Z %Y')

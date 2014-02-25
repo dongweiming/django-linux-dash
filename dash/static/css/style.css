@@ -8,13 +8,19 @@ Bootstrap Admin Template by EGrappler.com
 [1. Global]
 */
 
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
+  src: url("font/OpenSans-Regular-webfont.eot") format("embedded-opentype"),
+  url("font/OpenSans-Regular-webfont.woff") format("woff"),
+  url("font/OpenSans-Regular-webfont.ttf") format("truetype"),
+  url("font/OpenSans-Regular-webfont.svg#OpenSansRegular") format("svg");
+}
+
 body {
 	background: #f9f6f1;
-	font: 13px/1.7em 'Open Sans';
-}
-    
-p { 
-	font: 13px/1.7em 'Open Sans'; 	
+        font: 12px/1.5em "Open Sans", sans-serif;
 }
 
 a {
@@ -341,6 +347,7 @@ textarea {
 .widget {
 	
 	position: relative;
+
 	clear: both;
 	
 	width: auto;
@@ -352,7 +359,7 @@ textarea {
 	
 .widget-header {
 	position: relative;
-	
+        cursor: move;
 	height: 40px;
 	line-height: 40px;
 	
@@ -399,12 +406,8 @@ textarea {
 	color: #555;
 	vertical-align: middle;
 }
-.icon-refresh {
-        padding: 5px 10px;
-}
 .widget-content {
-	padding: 20px 15px 15px;
-	
+	padding: 20px 15px 15px;	
 	background: #FFF;
 	
 	
@@ -1302,3 +1305,4 @@ width: 11px;}
 		margin-left: 25px;
 	}	
 }
+

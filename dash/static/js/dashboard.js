@@ -1,6 +1,6 @@
 // Gets data from provided url and updates DOM element.
 function generate_os_data(url, element) {
-    $.get(url, function(data) {
+    $.get(url, function (data) {
         $(element).text(data);
     }, "json");
 }
@@ -18,20 +18,31 @@ function destroy_dataTable(table_id) {
 //DataTables
 //Sort file size data.
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-    "file-size-pre": function(a) {
-        var x = a.substring(0, a.length - 1);
-        var x_unit = (a.substring(a.length - 1, a.length) === "M" ?
-                      1000 : (a.substring(a.length - 1, a.length) === "G" ?
-                              1000000 : 1));
-
-        return parseInt(x * x_unit, 10);
+    "file-size-units": {
+        K: 1024,
+        M: Math.pow(1024, 2),
+        G: Math.pow(1024, 3),
+        T: Math.pow(1024, 4),
+        P: Math.pow(1024, 5),
+        E: Math.pow(1024, 6)
     },
 
-    "file-size-asc": function(a, b) {
+    "file-size-pre": function (a) {
+        var x = a.substring(0, a.length - 1);
+        var x_unit = a.substring(a.length - 1, a.length);
+        if (jQuery.fn.dataTableExt.oSort['file-size-units'][x_unit]) {
+            return parseInt(x * jQuery.fn.dataTableExt.oSort['file-size-units'][x_unit], 10);
+        }
+        else {
+            return parseInt(x + x_unit, 10);
+        }
+    },
+
+    "file-size-asc": function (a, b) {
         return ((a < b) ? -1 : ((a > b) ? 1 : 0));
     },
 
-    "file-size-desc": function(a, b) {
+    "file-size-desc": function (a, b) {
         return ((a < b) ? 1 : ((a > b) ? -1 : 0));
     }
 });
@@ -39,28 +50,62 @@ jQuery.extend(jQuery.fn.dataTableExt.oSort, {
 //DataTables
 //Sort numeric data which has a percent sign with it.
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-    "percent-pre": function(a) {
+    "percent-pre": function (a) {
         var x = (a === "-") ? 0 : a.replace(/%/, "");
         return parseFloat(x);
     },
 
-    "percent-asc": function(a, b) {
+    "percent-asc": function (a, b) {
         return ((a < b) ? -1 : ((a > b) ? 1 : 0));
     },
 
-    "percent-desc": function(a, b) {
+    "percent-desc": function (a, b) {
+        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
+});
+
+//DataTables
+//Sort IP addresses
+jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+    "ip-address-pre": function (a) {
+        // split the address into octets
+        //
+        var x = a.split('.');
+
+        // pad each of the octets to three digits in length
+        //
+        function zeroPad(num, places) {
+            var zero = places - num.toString().length + 1;
+            return Array(+(zero > 0 && zero)).join("0") + num;
+        }
+
+        // build the resulting IP
+        var r = '';
+        for (var i = 0; i < x.length; i++)
+            r = r + zeroPad(x[i], 3);
+
+        // return the formatted IP address
+        //
+        return r;
+    },
+
+    "ip-address-asc": function (a, b) {
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+    },
+
+    "ip-address-desc": function (a, b) {
         return ((a < b) ? 1 : ((a > b) ? -1 : 0));
     }
 });
 
 /*******************************
-  Data Call Functions
+ Data Call Functions
  *******************************/
 
 var dashboard = {};
 
-dashboard.getPs = function() {
-    $.get("sh/ps", function(data) {
+dashboard.getPs = function () {
+    $.get("sh/ps", function (data) {
         destroy_dataTable("ps_dashboard");
         $("#filter-ps").val("").off("keyup");
 
@@ -93,8 +138,8 @@ dashboard.getPs = function() {
     }, "json");
 }
 
-dashboard.getUsers = function() {
-    $.get("sh/users", function(data) {
+dashboard.getUsers = function () {
+    $.get("sh/users", function (data) {
         destroy_dataTable("users_dashboard");
 
         $("#users_dashboard").dataTable({
@@ -104,7 +149,9 @@ dashboard.getUsers = function() {
                 { sTitle: "User" },
                 { sTitle: "Home" }
             ],
-            aaSorting: [[0, "desc"]],
+			aaSorting: [
+			    [0, "desc"]
+			],
             iDisplayLength: 5,
             bPaginate: true,
             sPaginationType: "full_numbers",
@@ -116,8 +163,8 @@ dashboard.getUsers = function() {
     $("select[name='users_dashboard_length']").val("5");
 }
 
-dashboard.getOnline = function() {
-    $.get("sh/online", function(data) {
+dashboard.getOnline = function () {
+    $.get("sh/online", function (data) {
         destroy_dataTable("online_dashboard");
 
         $("#online_dashboard").dataTable({
@@ -128,7 +175,9 @@ dashboard.getOnline = function() {
                 { sTitle: "Login At" },
                 { sTitle: "Idle" }
             ],
-            aaSorting: [[0, "desc"]],
+			aaSorting: [
+			    [0, "desc"]
+			],
             iDisplayLength: 5,
             bPaginate: true,
             sPaginationType: "full_numbers",
@@ -140,8 +189,8 @@ dashboard.getOnline = function() {
     $("select[name='online_dashboard_length']").val("5");
 }
 
-dashboard.getRam = function() {
-    $.get("sh/mem", function(data) {
+dashboard.getRam = function () {
+    $.get("sh/mem", function (data) {
         var ram_total = data[1];
         var ram_used = Math.round((data[2] / ram_total) * 100);
         var ram_free = Math.round((data[3] / ram_total) * 100);
@@ -155,8 +204,8 @@ dashboard.getRam = function() {
     }, "json");
 }
 
-dashboard.getDf = function() {
-    $.get("sh/df", function(data) {
+dashboard.getDf = function () {
+    $.get("sh/df", function (data) {
         var table = $("#df_dashboard");
         var ex = document.getElementById("df_dashboard");
         if ($.fn.DataTable.fnIsDataTable(ex)) {
@@ -181,8 +230,8 @@ dashboard.getDf = function() {
     }, "json");
 }
 
-dashboard.getWhereIs = function() {
-    $.get("sh/whereis", function(data) {
+dashboard.getWhereIs = function () {
+    $.get("sh/whereis", function (data) {
         var table = $("#whereis_dashboard");
         var ex = document.getElementById("whereis_dashboard");
         if ($.fn.DataTable.fnIsDataTable(ex)) {
@@ -196,23 +245,26 @@ dashboard.getWhereIs = function() {
                 { sTitle: "Software" },
                 { sTitle: "Installation" }
             ],
-            bPaginate: false,
+            bPaginate: true,
             bFilter: false,
-            aaSorting: [[1, "desc"]],
+			aaSorting: [
+			    [1, "desc"]
+			],
             bAutoWidth: false,
             bInfo: false
         }).fadeIn();
     }, "json");
 }
 
-dashboard.getOs = function() {
+dashboard.getOs = function () {
     generate_os_data("sh/issue", "#os-info");
     generate_os_data("sh/hostname", "#os-hostname");
+	generate_os_data("sh/time", "#os-time");
     generate_os_data("sh/boot", "#os-uptime");
 }
 
-dashboard.getIp = function() {
-    $.get("sh/ip", function(data) {
+dashboard.getIp = function () {
+    $.get("sh/ip", function (data) {
         destroy_dataTable("ip_dashboard");
         $("#ip_dashboard").dataTable({
             aaData: data,
@@ -230,19 +282,42 @@ dashboard.getIp = function() {
     }, "json");
 }
 
-dashboard.getIspeed = function() {
+dashboard.getPing = function () {
+    $.get("sh/ping", function (data) {
+        destroy_dataTable("ping_dashboard");
+
+        $("#ping_dashboard").dataTable({
+            aaData: data,
+            aoColumns: [
+                { sTitle: "Host" },
+                { sTitle: "Time (in ms)" }
+            ],
+            aaSorting: [
+                [0, "desc"]
+            ],
+            bPaginate: true,
+            sPaginationType: "full_numbers",
+            bFilter: true,
+            sDom: "lrtip",
+            bAutoWidth: false,
+            bInfo: false
+        }).fadeIn();
+    }, "json");
+}
+
+dashboard.getIspeed = function () {
     var rate = $("#ispeed-rate");
 
     // 0 = KB
     // 1 = MB
     var AS = 0;
-    var power = AS+1;
+    var power = AS + 1;
     var result = 0;
 
-    $.get("sh/speed", function(data) {
+    $.get("sh/speed", function (data) {
         // round the speed (float to int);
         // dependent on value of AS, calculate speed in MB or KB ps
-        result = Math.floor((data/(Math.pow(1024,power))));
+        result = Math.floor((data / (Math.pow(1024,power))));
         // update rate of speed on widget
         rate.text(result);
 
@@ -252,8 +327,8 @@ dashboard.getIspeed = function() {
     lead.text(AS ? "MB/s" : "KB/s");
 }
 
-dashboard.getLoadAverage = function() {
-    $.get("sh/loadavg", function(data) {
+dashboard.getLoadAverage = function () {
+    $.get("sh/loadavg", function (data) {
         $("#cpu-1min").text(data[0][0]);
         $("#cpu-5min").text(data[1][0]);
         $("#cpu-15min").text(data[2][0]);
@@ -264,10 +339,44 @@ dashboard.getLoadAverage = function() {
 	generate_os_data("sh/numberofcores", "#core-number");
 }
 
+dashboard.getDnsmasqLeases = function () {
+    $.get("sh/dnsmasq-leases", function (data) {
+        var table = $("#dnsmasqleases_dashboard");
+        var ex = document.getElementById("dnsmasqleases_dashboard");
+        if ($.fn.DataTable.fnIsDataTable(ex)) {
+            table.hide().dataTable().fnClearTable();
+            table.dataTable().fnDestroy();
+        }
+
+        table.dataTable({
+            aaData: data,
+            aoColumns: [
+                { sTitle: "Expires At" },
+                { sTitle: "MAC Address" },
+                { sTitle: "IP Address", sType: "ip-address" },
+                { sTitle: "Hostname" }
+            ],
+            bPaginate: false,
+            bFilter: false,
+            bAutoWidth: true,
+            bInfo: false
+        }).fadeIn();
+    }, "json");
+}
+
+dashboard.getBandwidth = function () {
+    $.get("sh/bandwidth", function (data) {
+        $('#bw-tx').text(data.tx);
+        $('#bw-rx').text(data.rx);
+    }, 'json');
+
+}
+
+
 /**
 * Refreshes all widgets. Does not call itself recursively.
 */
-dashboard.getAll = function() {
+dashboard.getAll = function () {
     for (var item in dashboard.fnMap) {
         if (dashboard.fnMap.hasOwnProperty(item) && item !== "all") {
             dashboard.fnMap[item]();
@@ -315,4 +424,7 @@ dashboard.fnMap = {
     ispeed: dashboard.getIspeed,
     cpu: dashboard.getLoadAverage,
     netstat: dashboard.getNetStat,
+	dnsmasqleases: dashboard.getDnsmasqLeases,
+	bandwidth: dashboard.getBandwidth,
+	ping: dashboard.getPing
 };
