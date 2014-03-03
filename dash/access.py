@@ -47,12 +47,14 @@ def hostname():
 
 
 def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+    SIOCGIFADDR = 0x8915
+    ifreq = struct.pack('16sH14s', ifname.encode('utf-8'), socket.AF_INET, b'\x00'*14)
+    try:
+        res = fcntl.ioctl(sockfd, SIOCGIFADDR, ifreq)
+    except:
+        return None
+    ip = struct.unpack('16sH2x4s8x', res)[2]
+    return socket.inet_ntoa(ip)
 
 
 def ip():
@@ -163,7 +165,7 @@ def whereis():
     all_path = os.environ['PATH'].split(':')
     for path in all_path:
         try:
-            _, _, files = os.walk(path).next()
+            _, _, files = next(os.walk(path))
             all_available_cmd[path] = files
         except StopIteration:  # Maybe this PATH has not exists
             continue
@@ -189,7 +191,7 @@ def boot():
 def loadavg():
     load = os.getloadavg()
     cores = psutil.NUM_CPUS
-    return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)
+    return list(map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load))
 
 
 def bandwidth():
@@ -225,7 +227,7 @@ def dnsmasq_leases():
 def ping():
     #ICMP requiring root privileges. so I can not implementation written by
     # python
-    avg_regex = re.compile(r'dev =.*?/(.*?)/.*?/.*ms')
+    avg_regex = re.compile(b'dev =.*?/(.*?)/.*?/.*ms')
     p_cmd = None
     for i in ['/bin/ping', '/sbin/ping']:
         if os.path.exists(i):
@@ -240,7 +242,7 @@ def ping():
                                 shell = True)
         match = avg_regex.search(ping.stdout.read())
         if match:
-            return match.group(1)
+            return str(match.group(1))
         else:
             return ''
 
