@@ -1,10 +1,9 @@
 from django.views.generic import TemplateView, View
 
-from access import (df, hostname, ip, issue, mem, numberofcores, w, ps,
+from dash.access import (df, hostname, ip, issue, mem, numberofcores, w, ps,
                     whereis, users, boot, loadavg, bandwidth, dnsmasq_leases,
                     ping, date)
-from utils import json_response
-
+from dash.utils import json_response
 
 class IndexView(TemplateView):
     template_name = "dash/index.html"

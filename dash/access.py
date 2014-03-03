@@ -7,7 +7,7 @@ import socket
 import platform
 import struct
 import fcntl
-import urllib2
+import requests
 import subprocess
 try:
     import lsb_release
@@ -18,8 +18,8 @@ from collections import defaultdict
 import psutil
 from psutil._error import NoSuchProcess, AccessDenied
 
-from utils import bytes2human, to_meg
-from conf import dnsmasq_lease_file, ping_hosts
+from dash.utils import bytes2human, to_meg
+from dash.conf import dnsmasq_lease_file, ping_hosts
 
 is_mac = False
 if sys.platform == 'darwin':
@@ -57,7 +57,7 @@ def get_ip_address(ifname):
 
 def ip():
     url = 'http://ipecho.net/plain'
-    external_ip = urllib2.urlopen(url).read()
+    external_ip = requests.get(url).text
     ret = [["external ip", external_ip]]
     for network in psutil.net_io_counters(pernic=True).keys():
         if is_mac:
