@@ -7,7 +7,10 @@ import socket
 import platform
 import struct
 import fcntl
-import urllib2
+try:
+    import urllib2
+except ImportError:
+    import urllib.request as urllib2
 import subprocess
 try:
     import lsb_release
@@ -18,8 +21,8 @@ from collections import defaultdict
 import psutil
 from psutil._error import NoSuchProcess, AccessDenied
 
-from utils import bytes2human, to_meg
-from conf import dnsmasq_lease_file, ping_hosts
+from dash.utils import bytes2human, to_meg
+from dash.conf import dnsmasq_lease_file, ping_hosts
 
 is_mac = False
 if sys.platform == 'darwin':
@@ -47,18 +50,22 @@ def hostname():
 
 
 def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,
-        struct.pack('256s', ifname[:15])
-    )[20:24])
+    SIOCGIFADDR = 0x8915
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sockfd = sock.fileno()
+    ifreq = struct.pack('16sH14s', ifname.encode('utf-8'), socket.AF_INET, b'\x00'*14)
+    try:
+        res = fcntl.ioctl(sockfd, SIOCGIFADDR, ifreq)
+    except socket.error:
+        return None
+    ip = struct.unpack('16sH2x4s8x', res)[2]
+    return socket.inet_ntoa(ip)
 
 
 def ip():
     url = 'http://ipecho.net/plain'
     external_ip = urllib2.urlopen(url).read()
-    ret = [["external ip", external_ip]]
+    ret = [["external ip", external_ip.decode('utf-8')]]
     for network in psutil.net_io_counters(pernic=True).keys():
         if is_mac:
             import netifaces as ni
@@ -163,7 +170,7 @@ def whereis():
     all_path = os.environ['PATH'].split(':')
     for path in all_path:
         try:
-            _, _, files = os.walk(path).next()
+            _, _, files = next(os.walk(path))
             all_available_cmd[path] = files
         except StopIteration:  # Maybe this PATH has not exists
             continue
@@ -189,7 +196,7 @@ def boot():
 def loadavg():
     load = os.getloadavg()
     cores = psutil.NUM_CPUS
-    return map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load)
+    return list(map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load))
 
 
 def bandwidth():
@@ -225,7 +232,7 @@ def dnsmasq_leases():
 def ping():
     #ICMP requiring root privileges. so I can not implementation written by
     # python
-    avg_regex = re.compile(r'dev =.*?/(.*?)/.*?/.*ms')
+    avg_regex = re.compile(b'dev =.*?/(.*?)/.*?/.*ms')
     p_cmd = None
     for i in ['/bin/ping', '/sbin/ping']:
         if os.path.exists(i):
@@ -240,7 +247,7 @@ def ping():
                                 shell = True)
         match = avg_regex.search(ping.stdout.read())
         if match:
-            return match.group(1)
+            return match.group(1).decode('utf-8')
         else:
             return ''
 

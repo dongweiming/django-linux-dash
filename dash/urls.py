@@ -1,5 +1,5 @@
 from django.conf.urls import patterns
-from views import (IndexView, DfView, HostnameView, ExternalipView,
+from dash.views import (IndexView, DfView, HostnameView, ExternalipView,
                    IssueView, MemoryView, WhoView, NumcpuView,
                    PsView, UsersView, WhereisView, BootView,
                    LoadavgView, BandwidthView, DnsmasqView, PingView,
