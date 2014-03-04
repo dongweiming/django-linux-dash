@@ -7,7 +7,10 @@ import socket
 import platform
 import struct
 import fcntl
-import requests
+try:
+    import urllib2
+except ImportError:
+    import urllib.request as urllib2
 import subprocess
 try:
     import lsb_release
@@ -48,10 +51,12 @@ def hostname():
 
 def get_ip_address(ifname):
     SIOCGIFADDR = 0x8915
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sockfd = sock.fileno()
     ifreq = struct.pack('16sH14s', ifname.encode('utf-8'), socket.AF_INET, b'\x00'*14)
     try:
         res = fcntl.ioctl(sockfd, SIOCGIFADDR, ifreq)
-    except:
+    except socket.error:
         return None
     ip = struct.unpack('16sH2x4s8x', res)[2]
     return socket.inet_ntoa(ip)
@@ -59,8 +64,8 @@ def get_ip_address(ifname):
 
 def ip():
     url = 'http://ipecho.net/plain'
-    external_ip = requests.get(url).text
-    ret = [["external ip", external_ip]]
+    external_ip = urllib2.urlopen(url).read()
+    ret = [["external ip", external_ip.decode('utf-8')]]
     for network in psutil.net_io_counters(pernic=True).keys():
         if is_mac:
             import netifaces as ni
@@ -242,7 +247,7 @@ def ping():
                                 shell = True)
         match = avg_regex.search(ping.stdout.read())
         if match:
-            return str(match.group(1))
+            return match.group(1).decode('utf-8')
         else:
             return ''
 
