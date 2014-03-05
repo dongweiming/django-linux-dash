@@ -23,6 +23,7 @@ Run it!
 
     $git clone https://github.com/dongweiming/django-linux-dash
     $cd django-linux-dash
+    $cp dash/conf{.example,}.py
     $python manage.py runserver 0.0.0.0:8000
 
     and open your webbrowser, and type http://localhost:8000
