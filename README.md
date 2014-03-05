@@ -1,10 +1,10 @@
 django-linux-dash
 =================
 
-A clone of linux-dash written in Django, Most use psutils, Not use systemcall method
+A clone of linux-dash written in Django, Most use psutils, Not use systemcall method. Also provide python3 compatible.
 
 
-This is Python/Django redo of [Linux-Dash](https://github.com/afaqurk/linux-dash) from Github user [afaqurk](https://github.com/afaqurk)
+This is Python Django redo of [Linux-Dash](https://github.com/afaqurk/linux-dash) from Github user [afaqurk](https://github.com/afaqurk)
 
 Installation
 ============
