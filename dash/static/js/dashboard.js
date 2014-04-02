@@ -283,48 +283,72 @@ dashboard.getIp = function () {
 }
 
 dashboard.getPing = function () {
-    $.get("sh/ping", function (data) {
-        destroy_dataTable("ping_dashboard");
+    var refreshIcon = $('#refresh-ping .icon-refresh');
+    refreshIcon.addClass('icon-spin');
 
-        $("#ping_dashboard").dataTable({
-            aaData: data,
-            aoColumns: [
-                { sTitle: "Host" },
-                { sTitle: "Time (in ms)" }
-            ],
-            aaSorting: [
-                [0, "desc"]
-            ],
-            bPaginate: true,
-            sPaginationType: "full_numbers",
-            bFilter: true,
-            sDom: "lrtip",
-            bAutoWidth: false,
-            bInfo: false
-        }).fadeIn();
-    }, "json");
+    $.ajax({
+        url: 'sh/ping',
+        cache: false,
+        success: function (data) {
+            destroy_dataTable("ping_dashboard");
+
+            $("#ping_dashboard").dataTable({
+                aaData: data,
+                aoColumns: [
+                    { sTitle: "Host" },
+                    { sTitle: "Time (in ms)" }
+                ],
+                aaSorting: [
+                    [0, "desc"]
+                ],
+                bPaginate: true,
+                sPaginationType: "full_numbers",
+                bFilter: true,
+                sDom: "lrtip",
+                bAutoWidth: false,
+                bInfo: false
+            }).fadeIn();
+        },
+        complete: function() {
+            refreshIcon.removeClass('icon-spin');
+        }
+    });
 }
 
 dashboard.getIspeed = function () {
-    var rate = $("#ispeed-rate");
+    var rateUpstream = $("#ispeed-rate-upstream");
+    var rateDownstream = $("#ispeed-rate-downstream");
+    var refreshIcon = $("#refresh-ispeed .icon-refresh");
 
     // 0 = KB
     // 1 = MB
     var AS = 0;
     var power = AS + 1;
-    var result = 0;
+    var result = { 'upstream' :0, 'downstream':0};
 
-    $.get("sh/speed", function (data) {
-        // round the speed (float to int);
-        // dependent on value of AS, calculate speed in MB or KB ps
-        result = Math.floor((data / (Math.pow(1024,power))));
-        // update rate of speed on widget
-        rate.text(result);
+    refreshIcon.addClass('icon-spin');
 
+    $.ajax({
+        url: 'sh/speed',
+        cache: false,
+        success: function(data) {
+            // round the speed (float to int);
+            // dependent on value of AS, calculate speed in MB or KB ps
+            result['upstream'] = Math.floor((data['upstream'] / (Math.pow(1024, power))));
+            result['downstream'] = Math.floor((data['downstream'] / (Math.pow(1024, power))));
+            // update rate of speed on widget
+            rateUpstream.text(result['upstream']);
+            rateDownstream.text(result['downstream']);
+        },
+        complete: function() {
+            refreshIcon.removeClass('icon-spin');
+        }
     });
 
-    var lead = rate.next(".lead");
-    lead.text(AS ? "MB/s" : "KB/s");
+    var leadUpstream = rateUpstream.next(".lead");
+    var leadDownstream = rateDownstream.next(".lead");
+    leadUpstream.text(AS ? "MB/s" : "KB/s");
+    leadDownstream.text(AS ? "MB/s" : "KB/s");
 }
 
 dashboard.getLoadAverage = function () {
@@ -365,10 +389,21 @@ dashboard.getDnsmasqLeases = function () {
 }
 
 dashboard.getBandwidth = function () {
-    $.get("sh/bandwidth", function (data) {
-        $('#bw-tx').text(data.tx);
-        $('#bw-rx').text(data.rx);
-    }, 'json');
+    var refreshIcon = $('#refresh-bandwidth .icon-refresh');
+    refreshIcon.addClass('icon-spin');
+
+    $.ajax({
+        url: 'sh/bandwidth.php',
+        cache: false,
+        dataType: 'json',
+        success: function (data) {
+            $('#bw-tx').text(data.tx);
+            $('#bw-rx').text(data.rx);
+        },
+        complete: function() {
+            refreshIcon.removeClass('icon-spin');
+        }
+    });
 
 }
 
@@ -401,6 +436,7 @@ dashboard.getNetStat = function() {
                 { sTitle: "State" },
                 { sTitle: "PID" }
             ],
+            iDisplayLength: 5,
             bPaginate: true,
             sPaginationType: "full_numbers",
             bFilter: true,
@@ -410,6 +446,33 @@ dashboard.getNetStat = function() {
         }).fadeIn();
     }, "json");
 }
+
+
+dashboard.getLastLog = function () {
+    $.get("sh/lastlog", function (data) {
+        destroy_dataTable("lastlog_dashboard");
+
+    $("#lastlog_dashboard").dataTable({
+            aaData: data,
+            aoColumns: [
+                { sTitle: "Who" },
+                { sTitle: "From" },
+                { sTitle: "When" },
+            ],
+            aaSorting: [
+                [2, "desc"]
+            ],
+            iDisplayLength: 5,
+            bPaginate: true,
+            sPaginationType: "full_numbers",
+            bFilter: false,
+            bAutoWidth: false,
+            bInfo: false
+        }).fadeIn();
+    }, "json");
+    $("select[name='lastlog_dashboard_length']").val("5");
+}
+
 
 dashboard.fnMap = {
     all: dashboard.getAll,
@@ -424,7 +487,8 @@ dashboard.fnMap = {
     ispeed: dashboard.getIspeed,
     cpu: dashboard.getLoadAverage,
     netstat: dashboard.getNetStat,
-	dnsmasqleases: dashboard.getDnsmasqLeases,
-	bandwidth: dashboard.getBandwidth,
-	ping: dashboard.getPing
+    dnsmasqleases: dashboard.getDnsmasqLeases,
+    bandwidth: dashboard.getBandwidth,
+    ping: dashboard.getPing,
+    lastlog: dashboard.getLastLog
 };

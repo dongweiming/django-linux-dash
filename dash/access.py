@@ -19,7 +19,11 @@ except ImportError:
 from datetime import datetime
 from collections import defaultdict
 import psutil
-from psutil._error import NoSuchProcess, AccessDenied
+try:
+    from psutil import NoSuchProcess, AccessDenied
+except ImportError:
+    # Compatible < 2.0.0
+    from psutil._error import NoSuchProcess, AccessDenied
 
 from dash.utils import bytes2human, to_meg
 from dash.conf import dnsmasq_lease_file, ping_hosts
@@ -107,7 +111,7 @@ def w():
     # TODO user idle time not yet achieve
     user_idle_time = '0.00s'
     ret = []
-    for u in psutil.get_users():
+    for u in psutil.users():
         ret.append([u.name,
                     u.host,
                     datetime.fromtimestamp(u.started).strftime("%H:%M"),
@@ -118,32 +122,42 @@ def w():
 
 def ps():
     ret = []
-    for p in psutil.get_pid_list():
+    for p in psutil.pids():
         try:
             p_info = psutil.Process(p)
             # If stty
-            if p_info.terminal:
-                terminal = p_info.terminal.replace('/dev/tty', '')
+            if psutil.__version__ < '2.0.0':
+                isterminal = p_info.terminal
+                create_time = p_info.create_time
+                cmdline = p_info.cmdline
+                usernmae = p_info.username
+            else:
+                isterminal = p_info.terminal()
+                create_time = p_info.create_time()
+                cmdline = p_info.cmdline()
+                username = p_info.username()
+            if isterminal:
+                terminal = isterminal.replace('/dev/tty', '')
             else:
                 terminal = '??'
             # user + system (alias cputime)
-            cpu_time = (p_info.get_cpu_times().user +
-                        p_info.get_cpu_times().system)
+            cpu_time = (p_info.cpu_times().user +
+                        p_info.cpu_times().system)
             minute = int(cpu_time / 60)
             cpu_time = str(minute) + ':' + '%.2f' % (cpu_time - minute * 60)
 
-            ret.append([p_info.username,
+            ret.append([username,
                         p,
-                        p_info.get_cpu_percent(),
-                        '%.1f' % p_info.get_memory_percent(),
-                        p_info.get_memory_info().vms / 1024,  # vsz
-                        p_info.get_memory_info().rss / 1024,  # rss
+                        p_info.cpu_percent(),
+                        '%.1f' % p_info.memory_percent(),
+                        p_info.memory_info().vms / 1024,  # vsz
+                        p_info.memory_info().rss / 1024,  # rss
                         terminal,
                         str(p_info.status),  # STAT
                         datetime.fromtimestamp(
-                            p_info.create_time).strftime("%I:%M%p"),
+                            create_time).strftime("%I:%M%p"),
                         cpu_time,
-                        ' '.join(p_info.cmdline)
+                        ' '.join(cmdline)
                         ])
         except (NoSuchProcess, AccessDenied):
             continue
@@ -188,7 +202,12 @@ def whereis():
 
 
 def boot():
-    has_boot = time.time() - psutil.get_boot_time()
+    try:
+        boot_time = psutil.boot_time()
+    except AttributeError:
+        boot_time = psutil.get_boot_time()
+        # Compatible < 2.0.0
+    has_boot = time.time() - boot_time
     hour = int(has_boot / 3600)
     return str(hour) + ':' + str(int((has_boot - hour * 3600) / 60))
 

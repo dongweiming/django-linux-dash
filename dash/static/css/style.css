@@ -1133,7 +1133,9 @@ width: 11px;}
 
 .paginate_active { text-decoration: underline; }
 
-
+#refresh-ispeed .icon-refresh, #refresh-ping .icon-refresh, #refresh-bandwidth .icon-refresh {
+  margin: 0;
+}
 
 /*------------------------------------------------------------------
 [1. Max Width: 480px]
@@ -1306,3 +1308,34 @@ width: 11px;}
 	}	
 }
 
+
+/* ----------------------------------------                                                                             
+        Subnavbar CSS fix/work-around                                                                                   
+*/                                                                                                                      
+                                                                                                                        
+.container.nav-collapse.in {
+    overflow:visible;
+}
+.btn-navbar {
+    margin-top:-38px;
+}
+
+/*------------------------------------------------------------------                                                    
+        general-info widget specific style                                                                              
+*/                                                                                                                      
+                                                                                                                        
+#general-info-widget .general-title {
+        font-weight: bold;
+}
+
+#general-info-widget .general-title:after {
+        content:":";
+}
+
+#general-info-widget .widget-content {
+        padding:5px;
+}
+
+#general-info-widget .widget-content div {
+        margin-bottom:5px;
+}

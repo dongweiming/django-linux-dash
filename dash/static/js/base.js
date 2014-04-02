@@ -9,7 +9,7 @@ $(document).ready(function() {
     $(".pop").popover();
 
    // activate tooltips on hover
-   $("[data-toggle='tooltip']").tooltip({trigger: 'hover', placement:'right'});  
+   $("[data-toggle='tooltip']").tooltip({trigger: 'hover', placement:'right'});
 
     dashboard.getAll();
 }).on("click", ".js-smoothscroll", function(event) {
@@ -142,11 +142,13 @@ $('.open-widget').live('click',function(){
 
 function openWidget(widget, widgetIdentifier, speed){
 
+    // decrement closed-widget-count
+    if(widget.is(":hidden")) {
+        closedWidgetCount.text( Number(closedWidgetCount.text()) - 1);
+    }
+
     // unhide widget
     widget.show(500);
-
-    // decrement closed-widget-count 
-    closedWidgetCount.text( Number(closedWidgetCount.text()) - 1);
 
      // remove widget from localstorage
     var localData = JSON.parse(window.localStorage.getItem('hidden'));
@@ -162,10 +164,12 @@ function openWidget(widget, widgetIdentifier, speed){
 function hideWidget(widget, speed){
     // cache DOM objects/data used in this function
     var widgetName = widget.find('.widget-header h3').text();
-    var widgetIdentifier = widget.attr('id'); 
+    var widgetIdentifier = widget.attr('id');
 
     // update count
-    closedWidgetCount.text( Number(closedWidgetCount.text()) + 1);
+    if(!widget.is(":hidden")) {
+        closedWidgetCount.text( Number(closedWidgetCount.text()) + 1);
+    }
 
     // hide widget from DOM
     widget.hide(speed);
@@ -209,5 +213,5 @@ function keepWidgetOrdered(){
 
 function isInArray(array, search)
 {
-    return (array.indexOf(search) >= 0) ? true : false; 
+    return (array.indexOf(search) >= 0) ? true : false;
 }
