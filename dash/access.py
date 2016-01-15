@@ -104,7 +104,7 @@ def mem():
 
 
 def numberofcores():
-    return str(psutil.NUM_CPUS)
+    return str(psutil.cpu_count())
 
 
 def w():
@@ -214,7 +214,7 @@ def boot():
 
 def loadavg():
     load = os.getloadavg()
-    cores = psutil.NUM_CPUS
+    cores = psutil.cpu_count()
     return list(map(lambda x: ['%.2f' % x, '%.2f' % (x * 100 / cores)], load))
 
 
