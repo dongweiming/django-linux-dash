@@ -1,27 +1,29 @@
-from django.conf.urls import patterns
 from dash.views import (IndexView, DfView, HostnameView, ExternalipView,
                    IssueView, MemoryView, WhoView, NumcpuView,
                    PsView, UsersView, WhereisView, BootView,
                    LoadavgView, BandwidthView, DnsmasqView, PingView,
                    TimeView)
 
+from django.conf.urls import url
+from django.contrib import admin
 
-urlpatterns = patterns('',
-                       (r'^$', IndexView.as_view()),
-                       (r'^sh/df/$', DfView.as_view()),
-                       (r'^sh/hostname/$', HostnameView.as_view()),
-                       (r'^sh/ip/$', ExternalipView.as_view()),
-                       (r'^sh/issue/$', IssueView.as_view()),
-                       (r'^sh/mem/$', MemoryView.as_view()),
-                       (r'^sh/online/$', WhoView.as_view()),
-                       (r'^sh/numberofcores/$', NumcpuView.as_view()),
-                       (r'^sh/loadavg/$', LoadavgView.as_view()),
-                       (r'^sh/ps/$', PsView.as_view()),
-                       (r'^sh/users/$', UsersView.as_view()),
-                       (r'^sh/whereis/$', WhereisView.as_view()),
-                       (r'^sh/boot/$', BootView.as_view()),
-                       (r'^sh/bandwidth/$', BandwidthView.as_view()),
-                       (r'^sh/dnsmasq-leases/$', DnsmasqView.as_view()),
-                       (r'^sh/ping/$', PingView.as_view()),
-                       (r'^sh/time/$', TimeView.as_view()),
-                       )
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^$', IndexView.as_view()),
+    url(r'^sh/df/$', DfView.as_view()),
+    url(r'^sh/hostname/$', HostnameView.as_view()),
+    url(r'^sh/ip/$', ExternalipView.as_view()),
+    url(r'^sh/issue/$', IssueView.as_view()),
+    url(r'^sh/mem/$', MemoryView.as_view()),
+    url(r'^sh/online/$', WhoView.as_view()),
+    url(r'^sh/numberofcores/$', NumcpuView.as_view()),
+    url(r'^sh/loadavg/$', LoadavgView.as_view()),
+    url(r'^sh/ps/$', PsView.as_view()),
+    url(r'^sh/users/$', UsersView.as_view()),
+    url(r'^sh/whereis/$', WhereisView.as_view()),
+    url(r'^sh/boot/$', BootView.as_view()),
+    url(r'^sh/bandwidth/$', BandwidthView.as_view()),
+    url(r'^sh/dnsmasq-leases/$', DnsmasqView.as_view()),
+    url(r'^sh/ping/$', PingView.as_view()),
+    url(r'^sh/time/$', TimeView.as_view()),
+]

@@ -6,7 +6,7 @@ from dash.access import (df, hostname, ip, issue, mem, numberofcores, w, ps,
 from dash.utils import json_response
 
 class IndexView(TemplateView):
-    template_name = "dash/index.html"
+    template_name = "index.html"
 
 
 def base(cls, func):

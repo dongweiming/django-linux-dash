@@ -278,7 +278,7 @@ def ping():
                 if host:
                     ret.append([host, ret_ping(host)])
     else:
-        for host in ['gnu.org', 'github.com', 'wikipedia.org']:
+        for host in ['gnu.org', 'github.com', 'www.baidu.com', 'www.google.com']:
             ret.append([host, ret_ping(host)])
     return ret
 
